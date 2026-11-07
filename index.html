@@ -1,0 +1,396 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+<title>Investigación del etanol</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700&family=Figtree:wght@400;500;600&display=swap">
+<style>
+/* Layout: una columna de lectura, secciones separadas por espacio; cabecera oscura con la molécula */
+:root {
+  --bg: #F4F8F8;
+  --surface: #FFFFFF;
+  --ink: #14262D;
+  --muted: #4A636D;
+  --line: #D3E0E0;
+  --brand: #0B3C49;
+  --accent: #0F7B6C;
+  --amber: #F2A541;
+  --amber-ink: #8A4B00;
+  --alert: #D9534F;
+  --atom-c: #5B7C8D;
+  --hero-bg: #0B3C49;
+  --hero-ink: #FFFFFF;
+  --hero-soft: #A9D6C2;
+  --font-display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --font-body: "Figtree", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0C1A1F; --surface: #12262D; --ink: #E6F0F0; --muted: #9DB5BC; --line: #26424C;
+    --brand: #7FD3C2; --accent: #4CC2AE; --amber: #F2A541; --amber-ink: #F2B766; --alert: #E8716D;
+    --atom-c: #4F6F7E; --hero-bg: #12303A; --hero-ink: #FFFFFF; --hero-soft: #A9D6C2;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0C1A1F; --surface: #12262D; --ink: #E6F0F0; --muted: #9DB5BC; --line: #26424C;
+  --brand: #7FD3C2; --accent: #4CC2AE; --amber: #F2A541; --amber-ink: #F2B766; --alert: #E8716D;
+  --atom-c: #4F6F7E; --hero-bg: #12303A; --hero-ink: #FFFFFF; --hero-soft: #A9D6C2;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0;
+}
+.wrap { max-width: 860px; margin: 0 auto; }
+h1, h2, h3 { font-family: var(--font-display); line-height: 1.15; text-wrap: balance; margin: 0; }
+h2 { font-size: clamp(1.6rem, 4vw, 2.1rem); color: var(--brand); margin-bottom: 14px; }
+h3 { font-size: 1.15rem; color: var(--ink); margin-bottom: 6px; }
+p { margin: 0 0 12px; max-width: 65ch; }
+.eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+a { color: var(--accent); }
+a:focus-visible, summary:focus-visible { outline: 3px solid var(--amber); outline-offset: 2px; }
+
+/* cabecera */
+.hero { background: var(--hero-bg); color: var(--hero-ink); margin-inline: calc(-1 * max(16px, env(safe-area-inset-left, 0px))); padding: 36px max(16px, env(safe-area-inset-right, 0px)) 32px max(16px, env(safe-area-inset-left, 0px)); }
+.hero .wrap { display: grid; grid-template-columns: 1.1fr 1fr; gap: 28px; align-items: center; }
+.hero h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); color: var(--hero-ink); }
+.hero p { color: var(--hero-soft); font-size: 1.1rem; }
+.hero .group { color: var(--hero-ink); font-size: 0.95rem; margin-top: 18px; }
+.hero svg { width: 100%; height: auto; }
+.formula { font-family: var(--font-display); font-weight: 600; color: var(--amber); font-size: 1.15rem; }
+nav { display: flex; flex-wrap: wrap; gap: 6px 18px; padding: 16px 0; border-bottom: 1px solid var(--line); font-size: 0.95rem; }
+nav a { text-decoration: none; font-weight: 500; }
+nav a:hover { text-decoration: underline; }
+
+section { padding-block: 40px 8px; scroll-margin-top: 8px; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; }
+.cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+.cols > * { min-width: 0; }
+.cols.tight { gap: 12px; }
+.fact dt { font-size: 0.78rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); }
+.fact dd { margin: 0 0 12px; font-family: var(--font-display); font-weight: 600; font-size: 1.3rem; color: var(--brand); }
+.fact { margin: 0; }
+svg text { font-family: var(--font-body); }
+.atom-c { fill: var(--atom-c); }
+.atom-o { fill: var(--alert); }
+.atom-h { fill: var(--surface); stroke: var(--atom-c); stroke-width: 1.5; }
+.bond { stroke: var(--ink); stroke-width: 3; }
+.hero .bond { stroke: var(--hero-soft); }
+.hero .atom-h { fill: #FFFFFF; stroke: var(--hero-soft); }
+.lbl-light { fill: #FFFFFF; font-weight: 700; }
+.lbl-dark { fill: #14262D; font-weight: 700; }
+.note { font-size: 0.9rem; color: var(--muted); }
+.callout { background: var(--brand); color: var(--bg); border-radius: 10px; padding: 16px 20px; }
+.callout p { margin: 0; color: inherit; max-width: none; }
+:root[data-theme="dark"] .callout, :root:not([data-theme="light"]) .callout { }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; min-width: 520px; background: var(--surface); border: 1px solid var(--line); }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 0.98rem; }
+th { background: var(--brand); color: var(--bg); font-weight: 600; }
+td.num { font-weight: 600; color: var(--accent); font-variant-numeric: tabular-nums; white-space: nowrap; }
+td:first-child { font-weight: 600; color: var(--brand); }
+.bars { display: grid; gap: 10px; margin-top: 8px; }
+.bar { display: grid; grid-template-columns: 90px 1fr 64px; align-items: center; gap: 10px; font-variant-numeric: tabular-nums; }
+.bar .track { background: var(--line); border-radius: 6px; height: 22px; overflow: hidden; }
+.bar .fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.bar b { text-align: right; }
+.eq { font-family: var(--font-display); font-weight: 600; font-size: clamp(1.1rem, 3.4vw, 1.6rem); color: var(--brand); overflow-x: auto; white-space: nowrap; padding: 4px 0; }
+.badge { display: inline-block; background: var(--accent); color: #FFFFFF; font-weight: 600; padding: 4px 12px; border-radius: 999px; font-size: 0.9rem; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.timeline li { display: grid; grid-template-columns: 110px 1fr; gap: 14px; }
+.timeline .when { font-family: var(--font-display); font-weight: 600; color: var(--brand); }
+.timeline li > div { min-width: 0; }
+.tag { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+.tag.good { color: var(--accent); } .tag.bad { color: var(--alert); } .tag.env { color: var(--muted); }
+ul.plain { margin: 6px 0 0; padding-left: 20px; }
+ul.plain li { margin-bottom: 4px; }
+dl.gloss { margin: 0; display: grid; gap: 10px; }
+dl.gloss dt { font-weight: 600; color: var(--brand); }
+dl.gloss dd { margin: 0; color: var(--ink); }
+.hub { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; }
+.hub .panel { padding: 14px 16px; }
+.hub .panel p { margin: 0; font-size: 0.95rem; color: var(--muted); }
+footer { padding-block: 40px 40px; margin-top: 32px; border-top: 1px solid var(--line); font-size: 0.92rem; color: var(--muted); }
+@media (max-width: 640px) {
+  .hero .wrap { grid-template-columns: 1fr; }
+  .bar { grid-template-columns: 74px 1fr 56px; }
+  .timeline li { grid-template-columns: 1fr; gap: 2px; }
+}
+</style>
+
+<header class="hero">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow" style="color: var(--amber)">Química · 1.º de Bachillerato</p>
+      <h1>Investigación química: el etanol</h1>
+      <p>Enlace covalente, propiedades e impacto social.</p>
+      <p class="group">Integrantes: __________ · __________ · __________ · __________</p>
+    </div>
+    <div>
+      <svg viewBox="0 0 400 190" role="img" aria-label="Molécula de etanol: dos carbonos, un oxígeno y seis hidrógenos">
+        <g class="bond">
+          <line x1="30" y1="95" x2="120" y2="95"/><line x1="120" y1="95" x2="215" y2="95"/><line x1="215" y1="95" x2="305" y2="95"/><line x1="305" y1="95" x2="365" y2="95"/>
+          <line x1="120" y1="35" x2="120" y2="95"/><line x1="120" y1="95" x2="120" y2="155"/><line x1="215" y1="35" x2="215" y2="95"/><line x1="215" y1="95" x2="215" y2="155"/>
+        </g>
+        <circle class="atom-c" cx="120" cy="95" r="26"/><circle class="atom-c" cx="215" cy="95" r="26"/><circle class="atom-o" cx="305" cy="95" r="26"/>
+        <circle class="atom-h" cx="30" cy="95" r="16"/><circle class="atom-h" cx="365" cy="95" r="16"/>
+        <circle class="atom-h" cx="120" cy="35" r="16"/><circle class="atom-h" cx="120" cy="155" r="16"/><circle class="atom-h" cx="215" cy="35" r="16"/><circle class="atom-h" cx="215" cy="155" r="16"/>
+        <g text-anchor="middle" font-size="18" dominant-baseline="central">
+          <text class="lbl-light" x="120" y="95">C</text><text class="lbl-light" x="215" y="95">C</text><text class="lbl-light" x="305" y="95">O</text>
+          <text class="lbl-dark" x="30" y="95" font-size="14">H</text><text class="lbl-dark" x="365" y="95" font-size="14">H</text>
+          <text class="lbl-dark" x="120" y="35" font-size="14">H</text><text class="lbl-dark" x="120" y="155" font-size="14">H</text>
+          <text class="lbl-dark" x="215" y="35" font-size="14">H</text><text class="lbl-dark" x="215" y="155" font-size="14">H</text>
+        </g>
+      </svg>
+      <p class="formula" style="text-align:center; margin:6px 0 0; max-width:none">C<sub>2</sub>H<sub>6</sub>O · CH<sub>3</sub>–CH<sub>2</sub>–OH</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+<nav aria-label="Secciones">
+  <a href="#que-es">Qué es</a><a href="#enlace">Enlace</a><a href="#propiedades">Propiedades</a><a href="#calculos">Cálculos</a>
+  <a href="#hipotesis">Hipótesis</a><a href="#fuentes">Fuentes</a><a href="#historia">Historia</a><a href="#impacto">Impacto</a><a href="#conclusiones">Conclusiones</a>
+</nav>
+
+<section id="que-es">
+  <h2>¿Qué es el etanol?</h2>
+  <p>El etanol es un <strong>alcohol</strong>: un compuesto orgánico con el grupo –OH (hidroxilo) unido a un carbono. “Et-” indica 2 carbonos y “-ol” indica que es un alcohol. Cada línea del dibujo es un enlace covalente: dos átomos comparten un par de electrones.</p>
+  <div class="cols">
+    <dl class="panel fact">
+      <dt>Nombre común</dt><dd>Alcohol etílico</dd>
+      <dt>Nombre IUPAC</dt><dd>Etanol</dd>
+      <dt>Nº CAS</dt><dd style="margin:0">64-17-5</dd>
+    </dl>
+    <dl class="panel fact">
+      <dt>Fórmula molecular</dt><dd>C<sub>2</sub>H<sub>6</sub>O</dd>
+      <dt>Fórmula semidesarrollada</dt><dd style="margin:0">CH<sub>3</sub>–CH<sub>2</sub>–OH</dd>
+    </dl>
+  </div>
+  <p class="note" style="margin-top:10px">Fuente: PubChem, Ethanol (CID 702); NIOSH Pocket Guide.</p>
+</section>
+
+<section id="enlace">
+  <h2>Enlace y polaridad: el –OH lo cambia todo</h2>
+  <div class="cols">
+    <div class="panel">
+      <h3>Dentro de la molécula</h3>
+      <ul class="plain">
+        <li>Enlaces covalentes.</li>
+        <li>C–C y C–H: casi apolares.</li>
+        <li>C–O y O–H: polares, porque el oxígeno es más electronegativo (O 3,44 · C 2,55 · H 2,20).</li>
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Entre moléculas</h3>
+      <ul class="plain">
+        <li>London: débil, aparece en todas las moléculas.</li>
+        <li>Dipolo–dipolo: media.</li>
+        <li>Puentes de hidrógeno: la más importante, gracias al –OH.</li>
+      </ul>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <svg viewBox="0 0 360 100" style="width:100%; max-width:420px; height:auto; display:block; margin:0 auto 8px" role="img" aria-label="Dos grupos O–H unidos por un puente de hidrógeno discontinuo">
+      <line class="bond" x1="45" y1="60" x2="105" y2="60"/>
+      <line x1="125" y1="60" x2="210" y2="60" stroke="var(--amber)" stroke-width="3" stroke-dasharray="7 6"/>
+      <line class="bond" x1="240" y1="60" x2="305" y2="60"/>
+      <circle class="atom-o" cx="45" cy="60" r="22"/><circle class="atom-h" cx="110" cy="60" r="15"/>
+      <circle class="atom-o" cx="240" cy="60" r="22"/><circle class="atom-h" cx="310" cy="60" r="15"/>
+      <g text-anchor="middle" dominant-baseline="central" font-size="16">
+        <text class="lbl-light" x="45" y="60">O</text><text class="lbl-light" x="240" y="60">O</text>
+        <text class="lbl-dark" x="110" y="60" font-size="13">H</text><text class="lbl-dark" x="310" y="60" font-size="13">H</text>
+      </g>
+      <g text-anchor="middle" font-size="14" fill="var(--muted)"><text x="45" y="22">δ−</text><text x="110" y="28">δ+</text><text x="240" y="22">δ−</text></g>
+    </svg>
+    <p style="margin:0">Puente de hidrógeno: el H (δ+) de una molécula es atraído por el O (δ−) de la vecina. Por eso el etanol hierve a 78 °C y no a −89 °C como el etano, que no tiene –OH.</p>
+  </div>
+</section>
+
+<section id="propiedades">
+  <h2>Propiedades físicas y su explicación</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Propiedad</th><th>Dato</th><th>¿Qué significa?</th></tr></thead>
+      <tbody>
+        <tr><td>Fusión</td><td class="num">−114,1 °C</td><td>Líquido a 20 °C (puentes de H)</td></tr>
+        <tr><td>Ebullición</td><td class="num">78,3 °C</td><td>Volátil; puentes de H + dipolos</td></tr>
+        <tr><td>En agua</td><td class="num">Miscible</td><td>Se mezcla del todo (puentes de H)</td></tr>
+        <tr><td>En acetona / éter</td><td class="num">Miscible</td><td>Disuelve sustancias orgánicas</td></tr>
+        <tr><td>Conductividad eléctrica</td><td class="num">Muy baja (puro)</td><td>Sin iones libres: no conduce</td></tr>
+        <tr><td>Conductividad térmica</td><td class="num">0,17 W·m<sup>−1</sup>·K<sup>−1</sup></td><td>Baja: líquido molecular</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="note" style="margin-top:10px">Valores aproximados a presión atmosférica y 20–25 °C. Fuentes: PDG 2026; PubChem/HSDB; NIOSH; tabla termofísica UAM.</p>
+</section>
+
+<section id="calculos">
+  <h2>Cálculos: masa molar y composición</h2>
+  <div class="cols">
+    <div class="scroll">
+      <table style="min-width:0">
+        <thead><tr><th>Átomo</th><th>Cálculo</th><th>Masa (g/mol)</th></tr></thead>
+        <tbody>
+          <tr><td>C</td><td>2 × 12,011</td><td class="num">24,022</td></tr>
+          <tr><td>H</td><td>6 × 1,008</td><td class="num">6,048</td></tr>
+          <tr><td>O</td><td>1 × 15,999</td><td class="num">15,999</td></tr>
+          <tr><td>Total</td><td colspan="2" class="num">46,069 g·mol<sup>−1</sup></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h3>Composición en masa</h3>
+      <div class="bars" role="img" aria-label="Carbono 52,14 por ciento, hidrógeno 13,13 por ciento, oxígeno 34,73 por ciento">
+        <div class="bar"><span>Carbono</span><span class="track"><span class="fill" style="display:block; width:52.14%"></span></span><b>52,14 %</b></div>
+        <div class="bar"><span>Hidrógeno</span><span class="track"><span class="fill" style="display:block; width:13.13%"></span></span><b>13,13 %</b></div>
+        <div class="bar"><span>Oxígeno</span><span class="track"><span class="fill" style="display:block; width:34.73%"></span></span><b>34,73 %</b></div>
+      </div>
+      <p class="note" style="margin:10px 0 0">% de C = 24,022 / 46,069 × 100 = 52,14 %</p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <h3>Ejemplo: ¿cuántos moles hay en 100 g?</h3>
+    <p class="eq" style="margin:0">n = m / M = 100 g / 46,069 g·mol<sup>−1</sup> = 2,17 mol</p>
+  </div>
+</section>
+
+<section id="hipotesis">
+  <h2>Hipótesis y verificación</h2>
+  <div class="cols">
+    <div class="panel">
+      <p class="eyebrow">Hipótesis</p>
+      <p style="margin:0">El grupo –OH hace al etanol polar, miscible en agua y con mayor punto de ebullición que moléculas parecidas sin –OH.</p>
+    </div>
+    <div class="panel">
+      <p class="eyebrow">Datos consultados</p>
+      <ul class="plain" style="margin:0"><li>Miscible en agua.</li><li>Ebullición 78,3 °C; fusión −114,1 °C.</li></ul>
+      <p style="margin:12px 0 0"><span class="badge">Resultado: confirmada</span></p>
+    </div>
+  </div>
+  <div class="panel" style="margin-top:16px">
+    <h3>Punto de ebullición (°C)</h3>
+    <svg viewBox="0 0 480 260" style="width:100%; height:auto; display:block" role="img" aria-label="Puntos de ebullición: etano −88,6 °C, dimetil éter −24,8 °C, etanol 78,3 °C">
+      <line x1="20" y1="110" x2="460" y2="110" stroke="var(--muted)" stroke-width="1.5"/>
+      <text x="22" y="104" font-size="12" fill="var(--muted)">0 °C</text>
+      <rect x="50" y="110" width="100" height="84.2" fill="var(--atom-c)" rx="3"/>
+      <rect x="190" y="110" width="100" height="23.6" fill="var(--atom-c)" rx="3"/>
+      <rect x="330" y="36" width="100" height="74" fill="var(--accent)" rx="3"/>
+      <g font-size="15" font-weight="700" text-anchor="middle" fill="var(--ink)">
+        <text x="100" y="212">−88,6</text><text x="240" y="152">−24,8</text><text x="380" y="26">78,3</text>
+      </g>
+      <g font-size="13" text-anchor="middle" fill="var(--muted)">
+        <text x="100" y="236">Etano</text><text x="100" y="252">C₂H₆</text>
+        <text x="240" y="236">Dimetil éter</text><text x="240" y="252">C₂H₆O</text>
+        <text x="380" y="236">Etanol</text><text x="380" y="252">C₂H₆O</text>
+      </g>
+    </svg>
+    <p style="margin:8px 0 0">El dimetil éter tiene la misma fórmula que el etanol, C<sub>2</sub>H<sub>6</sub>O, pero no tiene –OH y hierve mucho más abajo. Misma fórmula, distinta estructura: la estructura manda.</p>
+    <p class="note" style="margin:6px 0 0">Contraste: PubChem (HSDB/CRC); NIOSH; PDG. Comparación cualitativa.</p>
+  </div>
+</section>
+
+<section id="fuentes">
+  <h2>¿Qué fuentes son fiables?</h2>
+  <div class="scroll">
+    <table>
+      <thead><tr><th>Fuente</th><th>Qué aporta</th><th>Fiabilidad</th></tr></thead>
+      <tbody>
+        <tr><td>PDG (2026)</td><td>Fusión −114,1 °C; ebullición 78,29 °C</td><td class="num">Alta: valores precisos</td></tr>
+        <tr><td>NIOSH (CDC)</td><td>−114 / 78,3 °C; seguridad laboral</td><td class="num">Alta: organismo público</td></tr>
+        <tr><td>PubChem (NIH)</td><td>Reúne varias fuentes (HSDB, CRC)</td><td class="num">Alta: datos trazables</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="cols tight" style="margin-top:16px">
+    <div class="panel"><h3>¿Quién lo publica?</h3><p class="note" style="margin:0">Un organismo público o una institución científica.</p></div>
+    <div class="panel"><h3>¿Cita sus datos?</h3><p class="note" style="margin:0">Enlaza a la fuente original.</p></div>
+    <div class="panel"><h3>¿Coincide con otras?</h3><p class="note" style="margin:0">Las diferencias son solo de redondeo.</p></div>
+  </div>
+  <p style="margin-top:12px"><strong>Elegimos PubChem</strong> para la ficha completa: enlaza cada dato con su fuente primaria.</p>
+</section>
+
+<section id="historia">
+  <h2>Historia y relación con Asturias</h2>
+  <ol class="timeline">
+    <li><span class="when">Antigüedad</span><div>Fermentación natural.</div></li>
+    <li><span class="when">Siglo XII</span><div>Se describe la destilación.</div></li>
+    <li><span class="when">1781–1808</span><div>Lavoisier estudia su composición y Saussure establece su fórmula.</div></li>
+  </ol>
+  <div class="panel" style="margin-top:20px">
+    <p class="eyebrow">Asturias · Sidra DOP</p>
+    <p>La sidra con Denominación de Origen Protegida nace de la fermentación alcohólica del mosto de manzana.</p>
+    <p class="eq">C<sub>6</sub>H<sub>12</sub>O<sub>6</sub> → 2 C<sub>2</sub>H<sub>5</sub>OH + 2 CO<sub>2</sub></p>
+    <p class="note" style="margin:0">Glucosa → etanol + dióxido de carbono, gracias a las levaduras.</p>
+    <ul class="plain"><li>Zona: 78 concejos.</li><li>Graduación habitual: 4–6 % vol.</li><li>Tradición y economía agroalimentaria.</li></ul>
+  </div>
+  <p class="note" style="margin-top:10px">Historia: Oxford Companion to Spirits &amp; Cocktails; Rasmussen (2019). Asturias: Consejo Regulador DOP Sidra de Asturias.</p>
+</section>
+
+<section id="impacto">
+  <h2>Impacto social y sostenibilidad</h2>
+  <div class="cols">
+    <div class="panel"><p class="tag good">Beneficios</p><ul class="plain"><li>Disolvente industrial.</li><li>Antiséptico formulado.</li><li>Biocombustible y química verde.</li></ul></div>
+    <div class="panel"><p class="tag bad">Riesgos</p><ul class="plain"><li>Depresor del sistema nervioso.</li><li>Dependencia y daño por consumo.</li><li>Líquido y vapor inflamables.</li></ul></div>
+    <div class="panel"><p class="tag env">Presión ambiental</p><ul class="plain"><li>Emisiones y energía de proceso.</li><li>Efluentes de fermentación.</li><li>Cultivos: agua y suelo.</li></ul></div>
+  </div>
+  <div class="callout" style="margin-top:16px">
+    <p><strong>Nuestra propuesta:</strong> recuperar y reutilizar el etanol de proceso en circuito cerrado, medir el consumo de energía y tratar los efluentes.</p>
+  </div>
+  <h3 style="margin-top:28px">¿Y si el etanol desapareciera mañana?</h3>
+  <div class="hub">
+    <div class="panel"><h3>Industria</h3><p>Disolventes y materia prima.</p></div>
+    <div class="panel"><h3>Salud</h3><p>Antisépticos y formulaciones.</p></div>
+    <div class="panel"><h3>Alimentación</h3><p>Fermentación: bebidas y aromas.</p></div>
+    <div class="panel"><h3>Economía</h3><p>Costes de sustitución.</p></div>
+    <div class="panel"><h3>Medio ambiente</h3><p>Biocombustible; otros solventes.</p></div>
+  </div>
+  <p style="margin-top:12px"><strong>No colapsa todo, pero exige sustitutos.</strong></p>
+  <p class="note">Riesgos: NIOSH/OSHA. Usos: Oxford Companion; sidra DOP: Consejo Regulador.</p>
+</section>
+
+<section id="conclusiones">
+  <h2>Conclusiones</h2>
+  <div class="cols">
+    <div class="panel"><h3>La estructura manda</h3><p style="margin:0">El etanol es una molécula covalente con un extremo polar: el grupo –OH.</p></div>
+    <div class="panel"><h3>Los puentes de H lo explican casi todo</h3><p style="margin:0">Ebullición a 78,3 °C, líquido a 20 °C y miscible en agua.</p></div>
+    <div class="panel"><h3>Útil y peligroso a la vez</h3><p style="margin:0">Disolvente, antiséptico y biocombustible, pero inflamable y con riesgos para la salud.</p></div>
+  </div>
+  <p style="margin-top:12px"><span class="badge">Hipótesis inicial: confirmada</span></p>
+</section>
+
+<section id="glosario">
+  <h2>Glosario</h2>
+  <dl class="gloss panel">
+    <div><dt>Enlace covalente</dt><dd>Los átomos comparten electrones.</dd></div>
+    <div><dt>Electronegatividad</dt><dd>Fuerza con que un átomo atrae los electrones del enlace.</dd></div>
+    <div><dt>Molécula polar</dt><dd>Tiene un extremo δ+ y otro δ−.</dd></div>
+    <div><dt>Puente de hidrógeno</dt><dd>Atracción entre un H unido a O y el O de otra molécula.</dd></div>
+    <div><dt>Miscible</dt><dd>Se mezcla con otro líquido en cualquier proporción.</dd></div>
+    <div><dt>Grupo funcional</dt><dd>Conjunto de átomos que da propiedades características (aquí, –OH).</dd></div>
+  </dl>
+</section>
+
+<footer>
+  <h3>Bibliografía</h3>
+  <ul class="plain">
+    <li>PubChem, Ethanol (CID 702): pubchem.ncbi.nlm.nih.gov/compound/702</li>
+    <li>NIOSH Pocket Guide: cdc.gov/niosh</li>
+    <li>Particle Data Group (2026): pdg.lbl.gov</li>
+    <li>Oxford Companion to Spirits &amp; Cocktails</li>
+    <li>Rasmussen (2019)</li>
+    <li>Consejo Regulador DOP Sidra de Asturias</li>
+  </ul>
+</footer>
+</div>
+
+</body>
+</html>
